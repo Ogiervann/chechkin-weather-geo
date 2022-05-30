@@ -1,61 +1,61 @@
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "httplib.h"
+#include "json.hpp"
 #include <iostream>
-#include <string>
 #include <map>
+#include <string>
 
+int main()
+{
+    httplib::Client ipCli("https://whatsmyip.dev");
 
-int main(){
-  httplib::Client ipCli("https://whatsmyip.dev");
+    // httplib::Request req("/ip");
+    // std::cout << "here\n";
 
-  //httplib::Request req("/ip");
+    auto res = ipCli.Get("/api/ip");
+    std::string ip;
+    nlohmann::json j = nlohmann::json::parse(res->body);
+    ip = j["addr"];
+    ip = "/" + ip;
+    httplib::Client geoCli("https://json.geoiplookup.io");
 
-  auto res = ipCli.Get("/api/ip");
-  std::string ip;
-  std::istringstream f(res->body);
-  std::getline(f, ip, ',');
-  ip.erase(0, 9);
-  ip.erase(--ip.end());
-  ip = '/' + ip;
-  httplib::Client geoCli("https://json.geoiplookup.io");
+    res = geoCli.Get(ip.c_str());
+    // std::cout << "here\n";
 
-  res = geoCli.Get(ip.c_str());
+    j = nlohmann::json::parse(res->body);
+    // std::cout << j;
 
-  //std::cout << res->body << "\n";
+    double temp;
+    std::string latitude;
+    temp = j["latitude"];
+    latitude = std::to_string(temp);
+    // std::cout << "here\n";
+    std::string longitude;
 
-  std::istringstream g(res->body);
-  std::string line;
-  std::string latitude;
-  std::string longitude;
-  while(std::getline(g, line)){
-    std::istringstream l(line);
-    std::string result;
+    temp = j["longitude"];
+    longitude = std::to_string(temp);
+    // std::cout << "here\n";
 
-    if(std::getline(l, result, ':')){
-      //std::cout << result << std::endl;
-      if(result == "    \"latitude\""){
-        std::getline(l, latitude, ' ');
-        std::getline(l, latitude);
-      }
-      if(result == "    \"longitude\""){
-        std::getline(l, longitude, ' ');
-        std::getline(l, longitude);
-      }
-    }
-  }
+    std::string city = j["city"];
 
-  latitude.erase(--(--(--latitude.end())), latitude.end());
-  longitude.erase(--(--(--longitude.end())), longitude.end());
+    // std::cout << latitude << ' ' << longitude << std::endl;
 
-  std::cout << latitude << ' ' << longitude << std::endl;
+    httplib::Client weatherCli("http://api.weatherapi.com");
 
-  httplib::Client weatherCli("https://api.openweathermap.org");
+    // std::string task = "/data/3.0/onecall?lat=" + latitude + "&lon=" +
+    // longitude +
+    // "&units=metrix&exclude=current&appid=bf10a33e451acf72727817b24caf5a11";
+    std::string task =
+        "/v1/current.json?key=9ec54f791e204282879130403223005&q=" + latitude +
+        ',' + longitude;
+    // std::cout << task << std::endl;
+    res = weatherCli.Get((task).c_str());
+    // std::cout << res << std::endl;
 
-  std::string task = "/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude + "&units=metrix&exclude=current&appid=3c5d356723d2e5638a9938834df8734c";
-  std::cout << task << std::endl;
-  res = weatherCli.Get((task).c_str());
-  std::cout << "here\n";
-  std::cout << res->body << std::endl;
+    j = nlohmann::json::parse(res->body);
+    // std::cout << task << std::endl;
 
-  return 0;
+    std::cout << j["current"]["condition"]["text"] << std::endl;
+
+    return 0;
 }
