@@ -41,4 +41,4 @@ jobs:
         run: sudo apt-get install -y build-essential
 
       - name: работа
-        run: ./main; make clean; make werror
+        run: make main; ./main; make clean; make werror

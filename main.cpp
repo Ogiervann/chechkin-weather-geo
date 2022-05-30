@@ -5,7 +5,7 @@
 #include <map>
 
 
-int main(int argc, char** argv){
+int main(){
   httplib::Client ipCli("https://whatsmyip.dev");
 
   //httplib::Request req("/ip");
