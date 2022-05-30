@@ -30,3 +30,15 @@ jobs:
 
       - name: Компиляция
         run: make clean ; make werror
+
+  make:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install GCC
+        run: sudo apt-get install -y build-essential
+
+      - name: работа
+        run: ./main; make clean; make werror

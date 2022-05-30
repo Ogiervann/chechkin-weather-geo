@@ -51,7 +51,7 @@ int main(int argc, char** argv){
 
   httplib::Client weatherCli("https://api.openweathermap.org");
 
-  std::string task = "/data/2.5/onecall?lat=" + latitude + "&lon=" + longitude + "&units=metrix&exclude=current&appid=3c5d356723d2e5638a9938834df8734c";
+  std::string task = "/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude + "&units=metrix&exclude=current&appid=3c5d356723d2e5638a9938834df8734c";
   std::cout << task << std::endl;
   res = weatherCli.Get((task).c_str());
   std::cout << "here\n";
